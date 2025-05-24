@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Malaria Detection</title>
+</head>
+<body>
+    <h1>Malaria Detection System</h1>
+    <form id="upload-form">
+        <input type="file" id="file" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>
+    <p id="result"></p>
+
+    <!-- ✅ JavaScript block added here -->
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const fileInput = document.getElementById("file");
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            const response = await fetch("/predict/", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById("result").innerText =
+                `Prediction: ${result.prediction}, Confidence: ${result.confidence.toFixed(2)}`;
+        });
+    </script>
+</body>
+</html>
