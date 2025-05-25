@@ -29,12 +29,14 @@ def preprocess_image(image_bytes):
 async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
     image = preprocess_image(image_bytes)
-    pred = float(model.predict(image)[0][0])
-    label = "Uninfected" if pred > 0.5 else "Parasitized"
+    pred = model.predict(image)[0]
+    label_idx = np.argmax(pred)
+    label = 'Paratisized' if label_idx == 0 else 'Uninfected'
+    confidence = float(pred[label_idx])
 
     return {
-        "prediction": label,
-        "confidence": round(pred * 100, 2)
+        'prediction': label,
+        'confidence': round(confidence*100,2)
     }
 
 

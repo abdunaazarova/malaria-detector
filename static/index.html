@@ -26,7 +26,7 @@
 
             const result = await response.json();
             document.getElementById("result").innerText =
-                `Prediction: ${result.prediction}, Confidence: ${result.confidence.toFixed(2)}`;
+                `Prediction: ${result.prediction}\nConfidence: ${result.confidence.toFixed(2)}%`;
         });
     </script>
 </body>
