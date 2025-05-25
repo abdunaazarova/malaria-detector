@@ -1,32 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Malaria Detection</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaria Cell Detector</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right,#f9f9f9,#e6f7ff);
+            padding: 40px;
+            text-align: center;
+        }
+        h1{
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .upload-box{
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        input[type='file']{
+            margin: 20px 0;
+        }
+        button{
+            padding: 10px 25px;
+            border: none;
+            background: #0077cc;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover{
+            background: #005fa3;
+        }
+
+        #preview{
+            margin-top: 20px;
+            margin-bottom: 20px;
+            max-width: 200px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        #result{
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #loader{
+            display: none;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Malaria Detection System</h1>
-    <form id="upload-form">
-        <input type="file" id="file" accept="image/*" required>
-        <button type="submit">Predict</button>
-    </form>
-    <p id="result"></p>
+    <h1>Malaria Cell Detection</h1>
 
+    <div class="upload-box">
+        <form id="upload-form">
+            <input type="file" id="file" accept="image/*" required><br>
+            <img id="preview" src="" alt="image preview"><br>
+            <button type="submit">predict</button>
+        </form>
+        <p id="result"></p>
+        <p id="loader">analyzing...</p>
+    </div>
     <script>
-        document.getElementById("upload-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const fileInput = document.getElementById("file");
-            const formData = new FormData();
-            formData.append("file", fileInput.files[0]);
+        const fileInput = document.getElementById('file');
+        const preview = document.getElementById('preview');
 
-            const response = await fetch("/predict/", {
-                method: "POST",
+        fileInput.addEventListener('change',()=>{
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('upload-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('file',fileInput.files[0]);
+
+            document.getElementById('result').innerText = '';
+            document.getElementById('loader').style.display = 'block';
+
+            const response = await fetch('/predict/',{
+                method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
-            document.getElementById("result").innerText =
-                `Prediction: ${result.prediction}\nConfidence: ${result.confidence.toFixed(2)}%`;
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById("result").innerText = 
+        `Prediction: ${result.prediction}\nConfidence: ${result.confidence}%`;
+
+            
         });
     </script>
+
 </body>
 </html>
+
+
